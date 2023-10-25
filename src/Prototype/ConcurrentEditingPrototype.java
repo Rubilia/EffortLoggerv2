@@ -158,6 +158,8 @@ public class ConcurrentEditingPrototype {
          // Bind a method to the ComboBox to handle selection changes
             projectSelect.valueProperty().addListener((observable, oldValue, newValue) -> {
                 try {
+                	// Reset UI elements
+                	detailsLabel.setText("Date: <date>    Start Time: <time>    Stop time: <time>");
                     // Retrieve project attributes based on the selected project name
                     JSONObject projectAttributes = jsonTracker.getProjectAttributes(newValue);
 
