@@ -1,0 +1,72 @@
+{
+  "projects": [
+    {
+      "id": "project_001",
+      "name": "Sample Project 1",
+      "UserLogs": [
+        {
+          "logId": "log_001",
+          "logName": "Sample Log 1",
+          "date": "2023-10-25",
+          "startTime": "09:00:00",
+          "stopTime": "11:00:00",
+          "lifeCycle": "Development",
+          "effortCategory": "Coding",
+          "plan": "Agile",
+          "currentUserEditing": {
+            "userId": null,
+            "lastInteractionTime": null
+          }
+        },
+        {
+          "logId": "log_002",
+          "logName": "Sample Log 2",
+          "date": "2023-10-26",
+          "startTime": "14:00:00",
+          "stopTime": "16:00:00",
+          "lifeCycle": "Testing",
+          "effortCategory": "Integration Test",
+          "plan": "Waterfall",
+          "currentUserEditing": {
+            "userId": null,
+            "lastInteractionTime": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "project_002",
+      "name": "Sample Project 2",
+      "UserLogs": [
+        {
+          "logId": "log_003",
+          "logName": "Sample Log 3",
+          "date": "2023-10-27",
+          "startTime": "10:00:00",
+          "stopTime": "12:00:00",
+          "lifeCycle": "Design",
+          "effortCategory": "UI Design",
+          "plan": "Scrum",
+          "currentUserEditing": {
+            "userId": null,
+            "lastInteractionTime": null
+          }
+        },
+        {
+          "logId": "log_004",
+          "logName": "Sample Log 4",
+          "date": "2023-10-28",
+          "startTime": "13:00:00",
+          "stopTime": "15:00:00",
+          "lifeCycle": "Planning",
+          "effortCategory": "Resource Allocation",
+          "plan": "Kanban",
+          "currentUserEditing": {
+            "userId": null,
+            "lastInteractionTime": null
+          }
+        }
+      ]
+    }
+  ]
+}
