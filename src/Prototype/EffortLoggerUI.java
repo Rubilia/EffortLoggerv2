@@ -16,8 +16,9 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 
 public class EffortLoggerUI extends Application {
+	private Stage primaryStage;
 
-    public VBox createPrototypeBox(String prototypeName, String descriptionText, String authorName) {
+	public VBox createPrototypeBox(String prototypeName, String descriptionText, String authorName, Runnable buttonAction) {
     	// Prototype Name
 	    Label title = new Label(prototypeName);
 	    title.setFont(Font.font("Arial", FontWeight.BOLD, 16));
@@ -38,17 +39,15 @@ public class EffortLoggerUI extends Application {
         Label authorLabel = new Label("Author: " + authorName);
         authorLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
         authorLabel.setStyle("-fx-text-fill: #555;");
-        
 
 	    // Create Launch Button
 	    Button launchButton = new Button("Launch");
 	    launchButton.setPrefWidth(100);
+	    launchButton.setOnAction(e -> buttonAction.run());
 	    
 	    String buttonBaseStyle = "-fx-background-color: linear-gradient(#007BFF, #0053a6); -fx-text-fill: white; -fx-font-size: 12px; -fx-border-radius: 15px; -fx-background-radius: 15px;";
 	    String buttonPressedStyle = "-fx-background-color: linear-gradient(#009BFF, #0073a6); -fx-scale-x: 0.95; -fx-scale-y: 0.95;";
-	    
 	    launchButton.setStyle(buttonBaseStyle);
-
 	    launchButton.setOnMousePressed(e -> launchButton.setStyle(buttonPressedStyle));
 	    launchButton.setOnMouseReleased(e -> launchButton.setStyle(buttonBaseStyle));
 
@@ -62,6 +61,8 @@ public class EffortLoggerUI extends Application {
 
     @Override
     public void start(Stage stage) {
+    	this.primaryStage = stage;
+
         stage.setTitle("EffortLogger Prototype");
 
         VBox mainContainer = new VBox(10);
@@ -76,11 +77,11 @@ public class EffortLoggerUI extends Application {
         
         // Edit these lines to specify information about your prototypes
         riskReductionContainer.getChildren().addAll(
-                createPrototypeBox("Concurrent Editing Prototype", "Concurrent editing allows multiple users to work simultaneously. EffortLogger ensures changes are accurate and avoids overwrites.", "Ilia Rubashkin"),
-                createPrototypeBox("Prototype 2", "Description for Prototype 2", "Author2"),
-                createPrototypeBox("Prototype 3", "Description for Prototype 3", "Author3"),
-                createPrototypeBox("Prototype 4", "Description for Prototype 4", "Author4"),
-                createPrototypeBox("Prototype 5", "Description for Prototype 5", "Author5")
+                createPrototypeBox("Concurrent Editing Prototype", "Concurrent editing allows multiple users to work simultaneously. EffortLogger ensures changes are accurate and avoids overwrites.", "Ilia Rubashkin", StartConcurrentEditingPrototype()),
+                createPrototypeBox("Prototype 2", "Description for Prototype 2", "Author2", StartPrototypeTwo()),
+                createPrototypeBox("Prototype 3", "Description for Prototype 3", "Author3", StartPrototypeThree()),
+                createPrototypeBox("Prototype 4", "Description for Prototype 4", "Author4", StartPrototypeFour()),
+                createPrototypeBox("Prototype 5", "Description for Prototype 5", "Author5", StartPrototypeFive())
         );
 
         mainContainer.getChildren().addAll(riskReductionTitle, riskReductionContainer);
@@ -104,6 +105,38 @@ public class EffortLoggerUI extends Application {
             scrollPane.lookup(".scroll-bar .thumb").setStyle("-fx-background-color: rgba(0, 123, 255, 0.5); -fx-background-radius: 2;");
         });
     }
+    
+	    private Runnable StartConcurrentEditingPrototype() {
+	        return () -> {
+	            ConcurrentEditingPrototype prototypeWindow = new ConcurrentEditingPrototype(this.primaryStage);
+	            prototypeWindow.showWindow();
+	        };
+	    }
+	    
+	    private Runnable StartPrototypeTwo() {
+	        return () -> {
+	            // Start your prototype
+	        };
+	    }
+	    
+	    private Runnable StartPrototypeThree() {
+	        return () -> {
+	            // Start your prototype
+	        };
+	    }
+    
+	    private Runnable StartPrototypeFour() {
+	        return () -> {
+	            // Start your prototype
+	        };
+	    }
+	    
+	    private Runnable StartPrototypeFive() {
+	        return () -> {
+	            // Start your prototype
+	        };
+	    }
+    
         public static void main(String[] args) {
             launch(args);
         }

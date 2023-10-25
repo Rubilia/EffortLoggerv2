@@ -23,14 +23,43 @@ To integrate a new prototype into the EffortLogger application, follow these ste
 
 1. Open the `EffortLoggerUI.java` file.
 2. Navigate to the section where prototypes are added to the `riskReductionContainer`.
-3. Modify the lines of code to specify information about your prototypes:
+3. Modify the lines of code to specify information about your prototypes and associated actions:
 
 ```java
 // Edit these lines to specify information about your prototypes
 riskReductionContainer.getChildren().addAll(
-    createPrototypeBox("Concurrent Editing Prototype", "Concurrent editing allows multiple users to work simultaneously. EffortLogger ensures changes are accurate and avoids overwrites.", "Ilia Rubashkin"),
-    createPrototypeBox("Prototype 2", "Description for Prototype 2", "Author2"),
-    createPrototypeBox("Prototype 3", "Description for Prototype 3", "Author3"),
-    createPrototypeBox("Prototype 4", "Description for Prototype 4", "Author4"),
-    createPrototypeBox("Prototype 5", "Description for Prototype 5", "Author5")
+    createPrototypeBox("Concurrent Editing Prototype", "Concurrent editing allows multiple users to work simultaneously. EffortLogger ensures changes are accurate and avoids overwrites.", "Ilia Rubashkin", StartConcurrentEditingPrototype()),
+    createPrototypeBox("Prototype 2", "Description for Prototype 2", "Author2", StartPrototypeTwo()),
+    createPrototypeBox("Prototype 3", "Description for Prototype 3", "Author3", StartPrototypeThree()),
+    createPrototypeBox("Prototype 4", "Description for Prototype 4", "Author4", StartPrototypeFour()),
+    createPrototypeBox("Prototype 5", "Description for Prototype 5", "Author5", StartPrototypeFive())
 );
+```
+
+To start your own prototype, you should write the code inside the corresponding function:
+
+```java
+private Runnable StartPrototypeTwo() {
+    return () -> {
+        // Start your prototype
+    };
+}
+
+private Runnable StartPrototypeThree() {
+    return () -> {
+        // Start your prototype
+    };
+}
+
+private Runnable StartPrototypeFour() {
+    return () -> {
+        // Start your prototype
+    };
+}
+
+private Runnable StartPrototypeFive() {
+    return () -> {
+        // Start your prototype
+    };
+}
+```
