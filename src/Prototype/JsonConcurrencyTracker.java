@@ -30,7 +30,7 @@ import org.json.JSONTokener;
  *       "UserLogs": [
  *       {
  *       	"logId": "<id>",                        // id of a log
- *          "logName": "<id>",                      // name of a log
+ *          "logName": "<name>",                      // name of a log
  *       	"date": "<date>",                       // Date of the project.
  *       	"startTime": "<start_time>",            // Start time of the project.
  *       	"stopTime": "<stop_time>",              // Stop time or end time of the project.
@@ -53,13 +53,11 @@ public class JsonConcurrencyTracker {
     
 	private static final String JSON_PATH = "Assets" + File.separator + "demo.json";
 	private JSONObject jsonData;
-    private String userId;
     private ConcurrentEditingPrototype stage;
     private Timer timer;
     private LocalDateTime lastInteractionTime;
 
-    public JsonConcurrencyTracker(String userId, ConcurrentEditingPrototype stage) {
-        this.userId = userId;
+    public JsonConcurrencyTracker(ConcurrentEditingPrototype stage) {
         this.stage = stage;
         this.timer = new Timer();
         try {
@@ -85,7 +83,7 @@ public class JsonConcurrencyTracker {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                informAboutEditingTimeout();
+                stage.informAboutEditingTimeout();
                 stopCountdown();
             }
         }, 30000);
@@ -96,93 +94,82 @@ public class JsonConcurrencyTracker {
         timer = new Timer();
     }
 
-    private void informAboutEditingTimeout() {
-        stage.informAboutEditingTimeout();
-    }
-
     /**
      * Fetches a list of all projects.
      * 
-     * @return JSONArray containing project data.
+     * @return ArrayList<String> containing project names.
      * @throws JSONException 
      */
-    public ArrayList<String> getProjects() throws JSONException {
+    public ArrayList<String> getProjectNames() throws JSONException {
         JSONArray projects = jsonData.getJSONArray("projects");
         ArrayList<String> projectList = new ArrayList<>();
         
         for (int i = 0; i < projects.length(); i++) {
-            projectList.add(projects.getJSONObject(i).toString());
+            projectList.add(projects.getJSONObject(i).get("name").toString());
         }
         
         return projectList;
     }
 
     /**
-     * Retrieves a specific attribute for a given project.
+     * Retrieves all attributes for a given project.
      * 
-     * @param projId The ID of the project.
-     * @param propertyName Name of the property.
-     * @return Value of the specified property.
+     * @param projectName The name of the project.
+     * @return JSONObject containing all attributes of the specified project.
      * @throws JSONException 
      */
-    public Map<String, String> getProjectAttributes(String projId) throws JSONException {
+    public JSONObject getProjectAttributes(String projectName) throws JSONException {
         JSONArray projects = jsonData.getJSONArray("projects");
         for (int i = 0; i < projects.length(); i++) {
             JSONObject project = projects.getJSONObject(i);
-            if (project.getString("id").equals(projId)) {
-                Map<String, String> attributes = new HashMap<>();
-                for (String key : project.keySet()) {
-                    attributes.put(key, project.getString(key));
+            if (project.getString("name").equals(projectName)) {
+                return project;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Retrieves a specific attribute for a given task (log entry).
+     * 
+     * @param projectName Project name.
+     * @param taskName Task name.
+     * @return JSONObject containing attributes of the specified task.
+     * @throws JSONException 
+     */
+    public JSONObject getTaskAttributes(String projectName, String taskName) throws JSONException {
+        JSONArray projects = jsonData.getJSONArray("projects");
+        for (int i = 0; i < projects.length(); i++) {
+            JSONObject project = projects.getJSONObject(i);
+            if (project.getString("name").equals(projectName)) {
+                JSONArray userLogs = project.getJSONArray("UserLogs");
+                for (int j = 0; j < userLogs.length(); j++) {
+                    JSONObject task = userLogs.getJSONObject(j);
+                    if (task.getString("logName").equals(taskName)) {
+                        return task; // Return the entire JSON object for the specified task.
+                    }
                 }
-                return attributes;
             }
         }
         return null;
     }
 
     /**
-     * Determines if a project is available for editing by a given user.
+     * Determines if a task is available for editing by a given user.
      * 
      * @param projId Project ID.
+     * @param taskId Task ID.
      * @param userId User ID.
-     * @return true if the project is available, false otherwise.
+     * @return true if the task is available, false otherwise.
      */
-    public boolean isProjectAvailable(String projId, String userId) {
-        String project = getProjectAttributes(projId).get("currentUserEditing");
-        if (project != null) {
-            JSONObject currentUserEditing = project.getJSONObject("currentUserEditing");
-            String currentUserId = currentUserEditing.getString("userId");
+    public boolean isTaskAvailable(String projId, String taskId, String userId) {
+    	JSONObject taskAttributes = getTaskAttributes(projId, taskId);
+        if (taskAttributes != null) {
+            String currentUserId = taskAttributes.get("currentUserEditing").toString();
             return currentUserId.equals(userId) || currentUserId.isEmpty();
         }
         return false;
     }
 
-    /**
-     * Modifies a specific attribute of a given project.
-     * 
-     * @param projId The ID of the project.
-     * @param propertyName The property name to be modified.
-     * @param propertyValue The new value for the property.
-     * @return true if the operation was successful, false otherwise.
-     * @throws JSONException 
-     */
-    public boolean editProjectAttributes(String projId, String propertyName, String propertyValue) throws JSONException {
-        JSONArray projects = jsonData.getJSONArray("projects");
-        for (int i = 0; i < projects.length(); i++) {
-            JSONObject project = projects.getJSONObject(i);
-            if (project.getString("id").equals(projId)) {
-                project.put(propertyName, propertyValue);
-                recordNewInteraction();
-                try {
-                    FileWriter writer = new FileWriter(JSON_PATH);
-                    writer.write(jsonData.toString());
-                    writer.close();
-                    return true;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return false;
-    }
+
 }

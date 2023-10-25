@@ -13,7 +13,13 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
+import java.util.ArrayList;
 import java.util.UUID;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ConcurrentEditingPrototype {
 
@@ -27,15 +33,19 @@ public class ConcurrentEditingPrototype {
     private ComboBox<String> projectSelect, logEntrySelect;
     private Button clearLogButton, updateButton, deleteButton, splitButton, proceedButton;
     private GridPane grid;
- 
+
     private String userID;  // Adding the userID field
-    private JsonConcurrencyTracker tracker;  // Assuming JsonConcurrencyTracker class exists in the same package
+    private JsonConcurrencyTracker jsonTracker;  // Assuming JsonConcurrencyTracker class exists in the same package
 
     public ConcurrentEditingPrototype(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.userID = UUID.randomUUID().toString();
-        this.tracker = new JsonConcurrencyTracker(userID, this);  // Instantiate the JsonConcurrencyTracker class
+        this.jsonTracker = new JsonConcurrencyTracker(this);  // Instantiate the JsonConcurrencyTracker class
+        
+        // Prepare UI for dynamic updates
         setupUI();
+        ProjectSelectorSetup();
+        logEntrySelectorSetup();
     }
 
     private void setupUI() {
@@ -61,7 +71,7 @@ public class ConcurrentEditingPrototype {
         selectProjectBox = new VBox(5);
         selectProjectLabel = new Label("1. Select the project to edit effort log");
         selectProjectLabel.setStyle(labelStyleBold);
-        projectSelect = new ComboBox<>(FXCollections.observableArrayList("Project 1", "Project 2"));
+        projectSelect = new ComboBox<>(FXCollections.observableArrayList());
         projectSelect.setStyle(comboBoxStyle);
         projectSelect.setPrefWidth(300);
         selectProjectBox.getChildren().addAll(selectProjectLabel, projectSelect);
@@ -82,7 +92,7 @@ public class ConcurrentEditingPrototype {
 
         effortLogEntryLabel = new Label("2.b. Select the Effort Log Entry to modify and make it the current selection:");
         effortLogEntryLabel.setStyle(labelStyleBold);
-        logEntrySelect = new ComboBox<>(FXCollections.observableArrayList("User Upload"));
+        logEntrySelect = new ComboBox<>(FXCollections.observableArrayList());
         logEntrySelect.setStyle(comboBoxStyle);
         layout.getChildren().addAll(effortLogEntryLabel, logEntrySelect);
 
@@ -139,10 +149,68 @@ public class ConcurrentEditingPrototype {
         Scene scene = new Scene(layout, 900, 650);
         stage.setScene(scene);
     }
+
+    public void ProjectSelectorSetup() {
+        try {
+            ArrayList<String> projects = jsonTracker.getProjectNames();
+            projectSelect.setItems(FXCollections.observableArrayList(projects));
+
+         // Bind a method to the ComboBox to handle selection changes
+            projectSelect.valueProperty().addListener((observable, oldValue, newValue) -> {
+                try {
+                    // Retrieve project attributes based on the selected project name
+                    JSONObject projectAttributes = jsonTracker.getProjectAttributes(newValue);
+
+                    // Clear existing items in logEntrySelect
+                    logEntrySelect.getItems().clear();
+
+                    // Retrieve the "UserLogs" array from the project attributes
+                    JSONArray userLogs = projectAttributes.getJSONArray("UserLogs");
+
+                    // Populate logEntrySelect with "logName" attributes from "UserLogs"
+                    for (int i = 0; i < userLogs.length(); i++) {
+                        JSONObject logEntry = userLogs.getJSONObject(i);
+                        String logName = logEntry.getString("logName");
+                        logEntrySelect.getItems().add(logName);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void logEntrySelectorSetup() {
+    	logEntrySelect.valueProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                // Get the selected project name and task name
+                String projectName = projectSelect.getValue();
+                String taskName = newValue;
+
+                // Use the method to get task attributes
+                JSONObject taskAttributes = jsonTracker.getTaskAttributes(projectName, taskName);
+
+                if (taskAttributes != null) {
+                    // Extract date, startTime, and stopTime from task attributes
+                    String date = taskAttributes.getString("date");
+                    String startTime = taskAttributes.getString("startTime");
+                    String stopTime = taskAttributes.getString("stopTime");
+
+                    // Set the text of the modifyLabel based on task attributes
+                    detailsLabel.setText("Date: " + date + "    StartTime: " + startTime + "   StopTime: " + stopTime);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+    }
     
     public void informAboutEditingTimeout() {
-    	
+    	// To be implemented
     }
+    
 
     public void showWindow() {
         primaryStage.close();

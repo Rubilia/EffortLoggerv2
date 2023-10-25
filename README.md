@@ -67,7 +67,7 @@ private Runnable StartPrototypeFive() {
 
 ## Installing JSON Package for Concurrent Editing Prototype
 
-Download the ZIP file from this [URL](https://github.com/stleary/JSON-java) and extract it to get the Jar. Add the Jar to your build path.
+Download the JAR file from this [URL](https://github.com/stleary/JSON-java) (**Click here if you just want the latest release jar file.**). Add the Jar to your build path.
 
 To add this Jar to your build path:
 - Right-click the Project
