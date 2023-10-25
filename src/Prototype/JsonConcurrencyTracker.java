@@ -1,9 +1,14 @@
 package Prototype;
 
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.time.LocalDateTime;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import org.json.JSONArray;
@@ -22,32 +27,38 @@ import org.json.JSONTokener;
  *     {
  *       "id": "<project_id>",                   // Unique identifier for the project.
  *       "name": "<project_name>",               // Name of the project.
- *       "userUpload": "<type_of_upload>",       // Type of upload performed by the user.
- *       "date": "<date>",                       // Date of the project.
- *       "startTime": "<start_time>",            // Start time of the project.
- *       "stopTime": "<stop_time>",              // Stop time or end time of the project.
- *       "lifeCycle": "<life_cycle_phase>",      // Phase of the project life cycle.
- *       "effortCategory": "<effort_category>",  // Category of the effort.
- *       "plan": "<type_of_plan>",               // Type of plan associated with the project.
- *       "currentUserEditing": {
- *         "userId": "<user_id_editing_project>",       // User ID of the person currently editing the project.
- *         "lastInteractionTime": "<last_interaction_time_in_utc>"  // Last interaction time in UTC format.
+ *       "UserLogs": [
+ *       {
+ *       	"logId": "<id>",                        // id of a log
+ *          "logName": "<id>",                      // name of a log
+ *       	"date": "<date>",                       // Date of the project.
+ *       	"startTime": "<start_time>",            // Start time of the project.
+ *       	"stopTime": "<stop_time>",              // Stop time or end time of the project.
+ *       	"lifeCycle": "<life_cycle_phase>",      // Phase of the project life cycle.
+ *       	"effortCategory": "<effort_category>",  // Category of the effort.
+ *       	"plan": "<type_of_plan>",               // Type of plan associated with the project.
+ *          "currentUserEditing": {
+ *             "userId": "<user_id_editing_project>",       // User ID of the person currently editing the project. (null by default)
+ *             "lastInteractionTime": "<last_interaction_time_in_utc>"  // Last interaction time in UTC format. (null by default)
+ *          }
  *       }
+ *       ],       // Type of upload performed by the user.
  *     },
  *     ...
  *   ]
  * }
  */
+
 public class JsonConcurrencyTracker {
     
-    private static final String JSON_PATH = "path_to_your_json_file.json";
-    private JSONObject jsonData;
+	private static final String JSON_PATH = "Assets" + File.separator + "demo.json";
+	private JSONObject jsonData;
     private String userId;
-    private Stage stage;
+    private ConcurrentEditingPrototype stage;
     private Timer timer;
     private LocalDateTime lastInteractionTime;
 
-    public JsonConcurrencyTracker(String userId, Stage stage) {
+    public JsonConcurrencyTracker(String userId, ConcurrentEditingPrototype stage) {
         this.userId = userId;
         this.stage = stage;
         this.timer = new Timer();
@@ -95,8 +106,15 @@ public class JsonConcurrencyTracker {
      * @return JSONArray containing project data.
      * @throws JSONException 
      */
-    public JSONArray getProjects() throws JSONException {
-        return jsonData.getJSONArray("projects");
+    public ArrayList<String> getProjects() throws JSONException {
+        JSONArray projects = jsonData.getJSONArray("projects");
+        ArrayList<String> projectList = new ArrayList<>();
+        
+        for (int i = 0; i < projects.length(); i++) {
+            projectList.add(projects.getJSONObject(i).toString());
+        }
+        
+        return projectList;
     }
 
     /**
@@ -107,12 +125,16 @@ public class JsonConcurrencyTracker {
      * @return Value of the specified property.
      * @throws JSONException 
      */
-    public String getProjectAttributes(String projId, String propertyName) throws JSONException {
+    public Map<String, String> getProjectAttributes(String projId) throws JSONException {
         JSONArray projects = jsonData.getJSONArray("projects");
         for (int i = 0; i < projects.length(); i++) {
             JSONObject project = projects.getJSONObject(i);
             if (project.getString("id").equals(projId)) {
-                return project.getString(propertyName);
+                Map<String, String> attributes = new HashMap<>();
+                for (String key : project.keySet()) {
+                    attributes.put(key, project.getString(key));
+                }
+                return attributes;
             }
         }
         return null;
@@ -126,7 +148,7 @@ public class JsonConcurrencyTracker {
      * @return true if the project is available, false otherwise.
      */
     public boolean isProjectAvailable(String projId, String userId) {
-        JSONObject project = getProjectAttributes(projId, "currentUserEditing");
+        String project = getProjectAttributes(projId).get("currentUserEditing");
         if (project != null) {
             JSONObject currentUserEditing = project.getJSONObject("currentUserEditing");
             String currentUserId = currentUserEditing.getString("userId");

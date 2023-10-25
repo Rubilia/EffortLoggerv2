@@ -67,12 +67,12 @@ private Runnable StartPrototypeFive() {
 
 ## Installing JSON Package for Concurrent Editing Prototype
 
-Download the ZIP file from this [URL](http://www.java2s.com/Code/Jar/j/Downloadjavajsonjar.htm) and extract it to get the Jar. Add the Jar to your build path.
+Download the ZIP file from this [URL](https://github.com/stleary/JSON-java) and extract it to get the Jar. Add the Jar to your build path.
 
 To add this Jar to your build path:
 - Right-click the Project
 - Navigate to Build Path > Configure build path
 - Select the Libraries tab
-- Click Add External Libraries
+- Click on Classpath
+- Click Add External JARs...
 - Select the downloaded Jar file
-

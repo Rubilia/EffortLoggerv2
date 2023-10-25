@@ -11,10 +11,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/rubilia/eclipse/java-json.jar">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/rubilia/eclipse/json-20231013.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
