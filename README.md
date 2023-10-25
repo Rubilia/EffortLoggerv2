@@ -6,7 +6,7 @@ EffortLogger is a JavaFX-based prototype logging application. This README outlin
 1. [Requirements](#requirements)
 2. [Setup](#setup)
 3. [Integration of a Prototype](#integration-of-a-prototype)
-4. [Support & Feedback](#support--feedback)
+4. [Installing JSON Package for Concurrent Editing Prototype](#installing-json-package-for-concurrent-editing-prototype)
 
 ## Requirements
 - Java JDK 20
@@ -63,3 +63,16 @@ private Runnable StartPrototypeFive() {
     };
 }
 ```
+
+
+## Installing JSON Package for Concurrent Editing Prototype
+
+Download the ZIP file from this [URL](http://www.java2s.com/Code/JarDownload/java/java-json.jar.zip) and extract it to get the Jar. Add the Jar to your build path.
+
+To add this Jar to your build path:
+- Right-click the Project
+- Navigate to Build Path > Configure build path
+- Select the Libraries tab
+- Click Add External Libraries
+- Select the downloaded Jar file
+
