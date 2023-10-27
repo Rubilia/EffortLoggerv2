@@ -21,7 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ConcurrentEditingPrototype {
+public class ConcurrentEditingPrototype extends Stage{
 
     private Stage stage;
     private Stage primaryStage;
@@ -46,6 +46,7 @@ public class ConcurrentEditingPrototype {
         setupUI();
         ProjectSelectorSetup();
         logEntrySelectorSetup();
+        
     }
 
     private void setupUI() {
@@ -179,7 +180,7 @@ public class ConcurrentEditingPrototype {
         bottomActions.getChildren().add(nextLineActions);
         layout.getChildren().add(bottomActions);
 
-        Scene scene = new Scene(layout, 900, 650);
+        Scene scene = new Scene(layout, 900, 820);
         stage.setScene(scene);
     }
 

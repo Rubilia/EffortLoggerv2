@@ -3,6 +3,9 @@
     {
       "id": "project_001",
       "name": "Sample Project 1",
+      "LifeCycleSteps": ["Design", "Development", "Deployment"],
+      "EffortCategories": ["UI/UX Design", "Backend Coding", "Infrastructure"],
+      "Plans": ["Agile", "Scrum", "Kanban"],
       "UserLogs": [
         {
           "logId": "log_001",
@@ -11,7 +14,7 @@
           "startTime": "09:00:00",
           "stopTime": "11:00:00",
           "lifeCycle": "Development",
-          "effortCategory": "Coding",
+          "effortCategory": "Backend Coding",
           "plan": "Agile",
           "currentUserEditing": {
             "userId": null,
@@ -24,9 +27,9 @@
           "date": "2023-10-26",
           "startTime": "14:00:00",
           "stopTime": "16:00:00",
-          "lifeCycle": "Testing",
-          "effortCategory": "Integration Test",
-          "plan": "Waterfall",
+          "lifeCycle": "Design",
+          "effortCategory": "UI/UX Design",
+          "plan": "Scrum",
           "currentUserEditing": {
             "userId": null,
             "lastInteractionTime": null
@@ -37,6 +40,9 @@
     {
       "id": "project_002",
       "name": "Sample Project 2",
+      "LifeCycleSteps": ["Initiation", "Execution", "Closure"],
+      "EffortCategories": ["Requirement Gathering", "Development", "Evaluation"],
+      "Plans": ["Waterfall", "Plan 2", "Plan 3"],
       "UserLogs": [
         {
           "logId": "log_003",
@@ -44,9 +50,9 @@
           "date": "2023-10-27",
           "startTime": "10:00:00",
           "stopTime": "12:00:00",
-          "lifeCycle": "Design",
-          "effortCategory": "UI Design",
-          "plan": "Scrum",
+          "lifeCycle": "Initiation",
+          "effortCategory": "Requirement Gathering",
+          "plan": "Waterfall",
           "currentUserEditing": {
             "userId": null,
             "lastInteractionTime": null
@@ -58,9 +64,9 @@
           "date": "2023-10-28",
           "startTime": "13:00:00",
           "stopTime": "15:00:00",
-          "lifeCycle": "Planning",
-          "effortCategory": "Resource Allocation",
-          "plan": "Kanban",
+          "lifeCycle": "Execution",
+          "effortCategory": "Evaluation",
+          "plan": "Plan 2",
           "currentUserEditing": {
             "userId": null,
             "lastInteractionTime": null

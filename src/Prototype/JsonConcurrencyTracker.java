@@ -1,16 +1,11 @@
 package Prototype;
 
-import javafx.stage.Stage;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.time.LocalDateTime;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +22,9 @@ import org.json.JSONTokener;
  *     {
  *       "id": "<project_id>",                   // Unique identifier for the project.
  *       "name": "<project_name>",               // Name of the project.
+ *       "LifeCycleSteps": [...],                // List of all life cycle steps
+ *       "EffortCategories": [...]               // Effort categories
+ *       "Plans": [...]                          // Plans
  *       "UserLogs": [
  *       {
  *       	"logId": "<id>",                        // id of a log
