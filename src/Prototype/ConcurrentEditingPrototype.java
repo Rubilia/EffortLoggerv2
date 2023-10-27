@@ -30,10 +30,10 @@ public class ConcurrentEditingPrototype {
     private VBox layout, selectProjectBox, clearLogBox, modifyLogBox, bottomActions, deleteActions, splitActions, proceedActions;
     private HBox combinedBox, updateBox, nextLineActions;
     private Label selectProjectLabel, clearLogLabel, effortLogEntryLabel, modifyLabel, detailsLabel, updateLabel, deleteLabel, splitLabel, proceedLabel;
-    private ComboBox<String> projectSelect, logEntrySelect;
+    private ComboBox<String> projectSelect, logEntrySelect, lifeCycleStepsDropdown, effortCategoryDropdown, planDropdown;;
     private Button clearLogButton, updateButton, deleteButton, splitButton, proceedButton;
     private GridPane grid;
-
+    
     private String userID;  // Adding the userID field
     private JsonConcurrencyTracker jsonTracker;  // Assuming JsonConcurrencyTracker class exists in the same package
 
@@ -53,14 +53,14 @@ public class ConcurrentEditingPrototype {
         stage.setTitle("Tu 44 Effort Log Editor");
         stage.setResizable(false);
         stage.setWidth(900);
-        stage.setHeight(650);
+        stage.setHeight(820);
 
         // Styles
-        String comboBoxStyle = "-fx-background-color: #FFFFFF; -fx-border-color: #AAAAAA; -fx-border-width: 1; -fx-font-size: 14pt;";
-        String buttonStyle = "-fx-background-color: #4E90A4; -fx-text-fill: #FFFFFF; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-font-size: 14pt;";
-        String labelStyleBold = "-fx-font-family: 'Arial'; -fx-font-weight: BOLD; -fx-font-size: 14pt;";
-        String layoutBackgroundStyle = "-fx-background-color: #E0E0E0;";
-
+        String comboBoxStyle = "-fx-background-color: #FFFFFF; -fx-border-color: #2D3748; -fx-border-width: 1; -fx-font-family: 'Roboto'; -fx-font-size: 14pt;";
+        String buttonStyle = "-fx-background-color: #48BB78; -fx-text-fill: #FFFFFF; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-font-family: 'Roboto'; -fx-font-size: 14pt; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 3, 3);";
+        String labelStyleBold = "-fx-font-family: 'Roboto'; -fx-font-weight: BOLD; -fx-font-size: 16pt; -fx-text-fill: #2D3748;";
+        String layoutBackgroundStyle = "-fx-background-color: #EDF2F7;";
+        
         layout = new VBox(20);
         layout.setPadding(new Insets(20, 20, 20, 20));
         layout.setStyle(layoutBackgroundStyle);
@@ -103,6 +103,39 @@ public class ConcurrentEditingPrototype {
         detailsLabel.setFont(Font.font("Arial", 12));
         modifyLogBox.getChildren().addAll(modifyLabel, detailsLabel);
         layout.getChildren().add(modifyLogBox);
+        
+        
+        // Adding the new block between "3.a." and "These attributes have been saved"
+        VBox lifeCycleBox = new VBox(5);
+        Label lifeCycleLabel = new Label("Life Cycle Steps:");
+        lifeCycleLabel.setStyle(labelStyleBold);
+        lifeCycleStepsDropdown = new ComboBox<>(FXCollections.observableArrayList());
+        lifeCycleStepsDropdown.setStyle(comboBoxStyle);
+        lifeCycleStepsDropdown.setPrefWidth(300);
+        lifeCycleBox.getChildren().addAll(lifeCycleLabel, lifeCycleStepsDropdown);
+        layout.getChildren().add(lifeCycleBox);
+
+        // Adding new block containing 2 sub-blocks
+        HBox newHBox = new HBox(100);
+        
+        // Block 1
+        VBox block1 = new VBox(5);
+        Label effortCategoryLabel = new Label("Effort Category:");
+        effortCategoryLabel.setStyle(labelStyleBold);
+        effortCategoryDropdown = new ComboBox<>(FXCollections.observableArrayList());
+        effortCategoryDropdown.setStyle(comboBoxStyle);
+        block1.getChildren().addAll(effortCategoryLabel, effortCategoryDropdown);
+        
+        // Block 2
+        VBox block2 = new VBox(5);
+        Label planLabel = new Label("Plan:");
+        planLabel.setStyle(labelStyleBold);
+        planDropdown = new ComboBox<>(FXCollections.observableArrayList());
+        planDropdown.setStyle(comboBoxStyle);
+        block2.getChildren().addAll(planLabel, planDropdown);
+
+        newHBox.getChildren().addAll(block1, block2);
+        layout.getChildren().add(newHBox);
 
         grid = new GridPane();
         grid.setHgap(20);
