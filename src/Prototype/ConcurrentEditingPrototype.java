@@ -1,7 +1,19 @@
+/**
+ * Author: Ilia Rubashkin
+ * Copyright © 2023 Ilia Rubashkin. All rights reserved.
+ * 
+ * Description: This file and its contents are the property of Ilia Rubashkin.
+ * Unauthorized use, modification, or distribution of this file or its contents
+ * without explicit permission from the author is strictly prohibited.
+ */
+
+
 package Prototype;
 
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -13,13 +25,16 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
+import javafx.application.Platform;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 public class ConcurrentEditingPrototype extends Stage{
 
@@ -30,12 +45,12 @@ public class ConcurrentEditingPrototype extends Stage{
     private VBox layout, selectProjectBox, clearLogBox, modifyLogBox, bottomActions, deleteActions, splitActions, proceedActions;
     private HBox combinedBox, updateBox, nextLineActions;
     private Label selectProjectLabel, clearLogLabel, effortLogEntryLabel, modifyLabel, detailsLabel, updateLabel, deleteLabel, splitLabel, proceedLabel;
-    private ComboBox<String> projectSelect, logEntrySelect, lifeCycleStepsDropdown, effortCategoryDropdown, planDropdown;;
+    private ComboBox<String> projectSelect, logEntrySelect, lifeCycleStepsDropdown, effortCategoryDropdown, planDropdown;
     private Button clearLogButton, updateButton, deleteButton, splitButton, proceedButton;
     private GridPane grid;
     
-    private String userID;  // Adding the userID field
-    private JsonConcurrencyTracker jsonTracker;  // Assuming JsonConcurrencyTracker class exists in the same package
+    private String userID, currentProjectName = null, currentTaskName = null;
+    private JsonConcurrencyTracker jsonTracker;
 
     public ConcurrentEditingPrototype(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -46,7 +61,7 @@ public class ConcurrentEditingPrototype extends Stage{
         setupUI();
         ProjectSelectorSetup();
         logEntrySelectorSetup();
-        
+        updateButtonSetup();        
     }
 
     private void setupUI() {
@@ -70,7 +85,7 @@ public class ConcurrentEditingPrototype extends Stage{
         combinedBox.setAlignment(Pos.CENTER);
 
         selectProjectBox = new VBox(5);
-        selectProjectLabel = new Label("1. Select the project to edit effort log");
+        selectProjectLabel = new Label("Select the project to edit effort log");
         selectProjectLabel.setStyle(labelStyleBold);
         projectSelect = new ComboBox<>(FXCollections.observableArrayList());
         projectSelect.setStyle(comboBoxStyle);
@@ -81,7 +96,7 @@ public class ConcurrentEditingPrototype extends Stage{
         combinedBox.getChildren().add(selectProjectBox);
 
         clearLogBox = new VBox(5);
-        clearLogLabel = new Label("2. a. Clear Project's Effort Log");
+        clearLogLabel = new Label("Clear Project's Effort Log");
         clearLogLabel.setStyle(labelStyleBold);
         clearLogButton = new Button("Clear This Effort Log");
         clearLogButton.setStyle(buttonStyle);
@@ -91,14 +106,14 @@ public class ConcurrentEditingPrototype extends Stage{
 
         layout.getChildren().add(combinedBox);
 
-        effortLogEntryLabel = new Label("2.b. Select the Effort Log Entry to modify and make it the current selection:");
+        effortLogEntryLabel = new Label("Select the Effort Log Entry to modify and make it the current selection:");
         effortLogEntryLabel.setStyle(labelStyleBold);
         logEntrySelect = new ComboBox<>(FXCollections.observableArrayList());
         logEntrySelect.setStyle(comboBoxStyle);
         layout.getChildren().addAll(effortLogEntryLabel, logEntrySelect);
 
         modifyLogBox = new VBox(5);
-        modifyLabel = new Label("3.a. Modify the Current Effort Log's attribute and \"Update this Entry\" when done:");
+        modifyLabel = new Label("Modify the Current Effort Log's attribute and \"Update this Entry\" when done:");
         modifyLabel.setStyle(labelStyleBold);
         detailsLabel = new Label("Date: <date>    Start Time: <time>    Stop time: <time>");
         detailsLabel.setFont(Font.font("Arial", 12));
@@ -153,7 +168,7 @@ public class ConcurrentEditingPrototype extends Stage{
 
         bottomActions = new VBox(10);
         deleteActions = new VBox(10);
-        deleteLabel = new Label("3. b. Delete Current Entry:");
+        deleteLabel = new Label("Delete Current Entry:");
         deleteLabel.setStyle(labelStyleBold);
         deleteButton = new Button("Delete This Entry");
         deleteButton.setStyle(buttonStyle);
@@ -162,7 +177,7 @@ public class ConcurrentEditingPrototype extends Stage{
 
         nextLineActions = new HBox(30);
         splitActions = new VBox(10);
-        splitLabel = new Label("3. c. Split Current Entry into two Entries:");
+        splitLabel = new Label("Split Current Entry into two Entries:");
         splitLabel.setStyle(labelStyleBold);
         splitButton = new Button("Split Entry Into Two Entries");
         splitButton.setStyle(buttonStyle);
@@ -170,7 +185,7 @@ public class ConcurrentEditingPrototype extends Stage{
         nextLineActions.getChildren().add(splitActions);
 
         proceedActions = new VBox(10);
-        proceedLabel = new Label("4. Proceed to Effort Log Console");
+        proceedLabel = new Label("Proceed to Effort Log Console");
         proceedLabel.setStyle(labelStyleBold);
         proceedButton = new Button("Proceed to Effort Log Console");
         proceedButton.setStyle(buttonStyle);
@@ -189,11 +204,16 @@ public class ConcurrentEditingPrototype extends Stage{
             ArrayList<String> projects = jsonTracker.getProjectNames();
             projectSelect.setItems(FXCollections.observableArrayList(projects));
 
-         // Bind a method to the ComboBox to handle selection changes
+            // Bind a method to the ComboBox to handle selection changes
             projectSelect.valueProperty().addListener((observable, oldValue, newValue) -> {
                 try {
-                	// Reset UI elements
-                	detailsLabel.setText("Date: <date>    Start Time: <time>    Stop time: <time>");
+                	if (newValue == null | newValue.equals("null")) return;
+                	
+                	currentProjectName = newValue;
+
+                    // Reset UI elements
+                    detailsLabel.setText("Date: <date>    Start Time: <time>    Stop time: <time>");
+
                     // Retrieve project attributes based on the selected project name
                     JSONObject projectAttributes = jsonTracker.getProjectAttributes(newValue);
 
@@ -209,6 +229,27 @@ public class ConcurrentEditingPrototype extends Stage{
                         String logName = logEntry.getString("logName");
                         logEntrySelect.getItems().add(logName);
                     }
+
+                    // Clear and set items for lifeCycleStepsDropdown
+                    lifeCycleStepsDropdown.getItems().clear();
+                    JSONArray lifeCycleSteps = projectAttributes.getJSONArray("LifeCycleSteps");
+                    for (int i = 0; i < lifeCycleSteps.length(); i++) {
+                        lifeCycleStepsDropdown.getItems().add(lifeCycleSteps.getString(i));
+                    }
+
+                    // Clear and set items for effortCategoryDropdown
+                    effortCategoryDropdown.getItems().clear();
+                    JSONArray effortCategories = projectAttributes.getJSONArray("EffortCategories");
+                    for (int i = 0; i < effortCategories.length(); i++) {
+                        effortCategoryDropdown.getItems().add(effortCategories.getString(i));
+                    }
+
+                    // Clear and set items for planDropdown
+                    planDropdown.getItems().clear();
+                    JSONArray plans = projectAttributes.getJSONArray("Plans");
+                    for (int i = 0; i < plans.length(); i++) {
+                        planDropdown.getItems().add(plans.getString(i));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -219,32 +260,110 @@ public class ConcurrentEditingPrototype extends Stage{
     }
     
     public void logEntrySelectorSetup() {
-    	logEntrySelect.valueProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                // Get the selected project name and task name
-                String projectName = projectSelect.getValue();
-                String taskName = newValue;
+        // Define the listener
+        ChangeListener<String> valueChangeListener = new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                try {
+                	if (newValue == null | newValue.equals("null")) return;
+                	
+                    if (!jsonTracker.changeOwnership(currentProjectName, oldValue, newValue, userID)) {
+                    	// Remove the listener
+                    	logEntrySelect.valueProperty().removeListener(this);
+                    	
+                    	currentTaskName = null;
+                    	// Use Platform.runLater to defer setting the value
+                    	Platform.runLater(() -> {
+                    	    // Set the value back to what it was
+                    		logEntrySelect.setValue(null);
 
-                // Use the method to get task attributes
-                JSONObject taskAttributes = jsonTracker.getTaskAttributes(projectName, taskName);
+                    	    // Re-add the listener
+                    	    logEntrySelect.valueProperty().addListener(this);
+                    	});
 
-                if (taskAttributes != null) {
-                    // Extract date, startTime, and stopTime from task attributes
-                    String date = taskAttributes.getString("date");
-                    String startTime = taskAttributes.getString("startTime");
-                    String stopTime = taskAttributes.getString("stopTime");
+                        // Show a dialog saying "This log is being edited by someone else" with an OK button
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Log Unavailable");
+                        alert.setHeaderText(null);
+                        alert.setContentText("This log is being edited by someone else.");
+                        alert.show();
+                        return; // Exit the listener to avoid further processing
+                    }
 
-                    // Set the text of the modifyLabel based on task attributes
-                    detailsLabel.setText("Date: " + date + "    StartTime: " + startTime + "   StopTime: " + stopTime);
+                    // Get the selected project name and task name
+                    String projectName = projectSelect.getValue();
+                    String taskName = newValue;
+                    currentTaskName = taskName;
+
+                    // Use the method to get task attributes
+                    JSONObject taskAttributes = jsonTracker.getTaskAttributes(projectName, taskName);
+
+                    if (taskAttributes != null) {
+                        // Extract date, startTime, stopTime, lifeCycle, effortCategory, and plan from task attributes
+                        String date = taskAttributes.getString("date");
+                        String startTime = taskAttributes.getString("startTime");
+                        String stopTime = taskAttributes.getString("stopTime");
+                        String lifeCycle = taskAttributes.getString("lifeCycle");
+                        String effortCategory = taskAttributes.getString("effortCategory");
+                        String plan = taskAttributes.getString("plan");
+
+                        // Set the text of the modifyLabel and ComboBoxes based on task attributes
+                        detailsLabel.setText("Date: " + date + "    StartTime: " + startTime + "   StopTime: " + stopTime);
+                        lifeCycleStepsDropdown.setValue(lifeCycle);
+                        effortCategoryDropdown.setValue(effortCategory);
+                        planDropdown.setValue(plan);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+        };
+
+        // Initially add the listener
+        logEntrySelect.valueProperty().addListener(valueChangeListener);
+    }
+    
+    public void updateButtonSetup() {
+        updateButton.setOnAction(e -> {
+            // Check if currentProjectName or currentTaskName are null
+            if (currentProjectName == null || currentTaskName == null) {
+                // Show an error alert
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Please ensure both the project and task are selected!");
+                alert.showAndWait();
+                return;
+            }
+
+            // Retrieve text from comboboxes
+            String selectedLifeCycleStep = lifeCycleStepsDropdown.getValue();
+            String selectedEffortCategory = effortCategoryDropdown.getValue();
+            String selectedPlan = planDropdown.getValue();
+
+            // Call updateLogData function
+            try {
+            	jsonTracker.updateLogData(currentProjectName, currentTaskName, selectedLifeCycleStep, selectedEffortCategory, selectedPlan);
+            } catch (JSONException ex) {
+                // Handle JSON parsing error here (e.g., show an error alert or print the stack trace)
+                ex.printStackTrace();
+            }
+            
+            // Show an error alert
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Success!");
+            alert.setHeaderText(null);
+            alert.setContentText("Your changes have been saved");
+            alert.showAndWait();
         });
     }
     
     public void informAboutEditingTimeout() {
-    	// To be implemented
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Autosave");
+        alert.setHeaderText(null);
+        alert.setContentText("You have not interacted with the program for a while! Your changes have been saved");
+        alert.showAndWait();
     }
     
 

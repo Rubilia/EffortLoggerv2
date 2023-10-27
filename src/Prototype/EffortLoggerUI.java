@@ -1,3 +1,14 @@
+/**
+ * Author: Ilia Rubashkin
+ * Copyright © 2023 Ilia Rubashkin. All rights reserved.
+ * 
+ * Description: This file and its contents are the property of Ilia Rubashkin.
+ * Unauthorized use, modification, or distribution of this file or its contents
+ * without explicit permission from the author is strictly prohibited.
+ */
+
+
+
 package Prototype;
 
 import javafx.application.Application;

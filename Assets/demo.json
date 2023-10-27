@@ -1,78 +1,100 @@
-{
-  "projects": [
+{"projects": [
     {
-      "id": "project_001",
-      "name": "Sample Project 1",
-      "LifeCycleSteps": ["Design", "Development", "Deployment"],
-      "EffortCategories": ["UI/UX Design", "Backend Coding", "Infrastructure"],
-      "Plans": ["Agile", "Scrum", "Kanban"],
-      "UserLogs": [
-        {
-          "logId": "log_001",
-          "logName": "Sample Log 1",
-          "date": "2023-10-25",
-          "startTime": "09:00:00",
-          "stopTime": "11:00:00",
-          "lifeCycle": "Development",
-          "effortCategory": "Backend Coding",
-          "plan": "Agile",
-          "currentUserEditing": {
-            "userId": null,
-            "lastInteractionTime": null
-          }
-        },
-        {
-          "logId": "log_002",
-          "logName": "Sample Log 2",
-          "date": "2023-10-26",
-          "startTime": "14:00:00",
-          "stopTime": "16:00:00",
-          "lifeCycle": "Design",
-          "effortCategory": "UI/UX Design",
-          "plan": "Scrum",
-          "currentUserEditing": {
-            "userId": null,
-            "lastInteractionTime": null
-          }
-        }
-      ]
+        "LifeCycleSteps": [
+            "Design",
+            "Development",
+            "Deployment"
+        ],
+        "Plans": [
+            "Agile",
+            "Scrum",
+            "Kanban"
+        ],
+        "name": "Sample Project 1",
+        "EffortCategories": [
+            "UI/UX Design",
+            "Backend Coding",
+            "Infrastructure"
+        ],
+        "id": "project_001",
+        "UserLogs": [
+            {
+                "date": "2023-10-25",
+                "effortCategory": "Backend Coding",
+                "currentUserEditing": {
+                    "lastInteractionTime": "",
+                    "userId": ""
+                },
+                "logName": "Sample Log 1",
+                "logId": "log_001",
+                "startTime": "09:00:00",
+                "stopTime": "11:00:00",
+                "lifeCycle": "Development",
+                "plan": "Agile"
+            },
+            {
+                "date": "2023-10-26",
+                "effortCategory": "UI/UX Design",
+                "currentUserEditing": {
+                    "lastInteractionTime": "",
+                    "userId": ""
+                },
+                "logName": "Sample Log 2",
+                "logId": "log_002",
+                "startTime": "14:00:00",
+                "stopTime": "16:00:00",
+                "lifeCycle": "Development",
+                "plan": "Scrum"
+            }
+        ]
     },
     {
-      "id": "project_002",
-      "name": "Sample Project 2",
-      "LifeCycleSteps": ["Initiation", "Execution", "Closure"],
-      "EffortCategories": ["Requirement Gathering", "Development", "Evaluation"],
-      "Plans": ["Waterfall", "Plan 2", "Plan 3"],
-      "UserLogs": [
-        {
-          "logId": "log_003",
-          "logName": "Sample Log 3",
-          "date": "2023-10-27",
-          "startTime": "10:00:00",
-          "stopTime": "12:00:00",
-          "lifeCycle": "Initiation",
-          "effortCategory": "Requirement Gathering",
-          "plan": "Waterfall",
-          "currentUserEditing": {
-            "userId": null,
-            "lastInteractionTime": null
-          }
-        },
-        {
-          "logId": "log_004",
-          "logName": "Sample Log 4",
-          "date": "2023-10-28",
-          "startTime": "13:00:00",
-          "stopTime": "15:00:00",
-          "lifeCycle": "Execution",
-          "effortCategory": "Evaluation",
-          "plan": "Plan 2",
-          "currentUserEditing": {
-            "userId": null,
-            "lastInteractionTime": null
-          }
-        }
-      ]
+        "LifeCycleSteps": [
+            "Initiation",
+            "Execution",
+            "Closure"
+        ],
+        "Plans": [
+            "Waterfall",
+            "Plan 2",
+            "Plan 3"
+        ],
+        "name": "Sample Project 2",
+        "EffortCategories": [
+            "Requirement Gathering",
+            "Development",
+            "Evaluation"
+        ],
+        "id": "project_002",
+        "UserLogs": [
+            {
+                "date": "2023-10-27",
+                "effortCategory": "Requirement Gathering",
+                "currentUserEditing": {
+                    "lastInteractionTime": "",
+                    "userId": ""
+                },
+                "logName": "Sample Log 3",
+                "logId": "log_003",
+                "startTime": "10:00:00",
+                "stopTime": "12:00:00",
+                "lifeCycle": "Initiation",
+                "plan": "Waterfall"
+            },
+            {
+                "date": "2023-10-28",
+                "effortCategory": "Evaluation",
+                "currentUserEditing": {
+                    "lastInteractionTime": "",
+                    "userId": ""
+                },
+                "logName": "Sample Log 4",
+                "logId": "log_004",
+                "startTime": "13:00:00",
+                "stopTime": "15:00:00",
+                "lifeCycle": "Execution",
+                "plan": "Plan 2"
+            }
+        ]
     }
-  ]
-}
+]}
