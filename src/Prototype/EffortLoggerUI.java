@@ -89,7 +89,7 @@ public class EffortLoggerUI extends Application {
         // Edit these lines to specify information about your prototypes
         riskReductionContainer.getChildren().addAll(
                 createPrototypeBox("Concurrent Editing Prototype", "Concurrent editing allows multiple users to work simultaneously. EffortLogger ensures changes are accurate and avoids overwrites.", "Ilia Rubashkin", StartConcurrentEditingPrototype()),
-                createPrototypeBox("Prototype 2", "Description for Prototype 2", "Author2", StartPrototypeTwo()),
+                createPrototypeBox("Login / Sign-Up Authentication Prototype", "Login / Sign-up authentication allows users to enter into the planning poker enviornment without the worry of unauthorized users / hackers breaching the planning poker data or their own.", "Author2", StartPrototypeTwo()),
                 createPrototypeBox("Saved State Poker Prototype", "Saved state prevents data loss in the event of error in Planning Poker", "Josh Camberg", StartSavedPokerStatePrototype()),
                 createPrototypeBox("Prototype 4", "Description for Prototype 4", "Author4", StartPrototypeFour()),
                 createPrototypeBox("Prototype 5", "Description for Prototype 5", "Author5", StartPrototypeFive())
@@ -126,7 +126,8 @@ public class EffortLoggerUI extends Application {
 	    
 	    private Runnable StartPrototypeTwo() {
 	        return () -> {
-	            // Start your prototype
+	        	LoginAuthentication prototypeWindow  = new LoginAuthentication(this.primaryStage);
+	        		prototypeWindow.showWindow();
 	        };
 	    }
 	    
