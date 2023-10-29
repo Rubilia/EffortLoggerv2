@@ -90,7 +90,7 @@ public class EffortLoggerUI extends Application {
         riskReductionContainer.getChildren().addAll(
                 createPrototypeBox("Concurrent Editing Prototype", "Concurrent editing allows multiple users to work simultaneously. EffortLogger ensures changes are accurate and avoids overwrites.", "Ilia Rubashkin", StartConcurrentEditingPrototype()),
                 createPrototypeBox("Prototype 2", "Description for Prototype 2", "Author2", StartPrototypeTwo()),
-                createPrototypeBox("Prototype 3", "Description for Prototype 3", "Author3", StartPrototypeThree()),
+                createPrototypeBox("Saved State Poker Prototype", "Saved state prevents data loss in the event of error in Planning Poker", "Josh Camberg", StartSavedPokerStatePrototype()),
                 createPrototypeBox("Prototype 4", "Description for Prototype 4", "Author4", StartPrototypeFour()),
                 createPrototypeBox("Prototype 5", "Description for Prototype 5", "Author5", StartPrototypeFive())
         );
@@ -130,9 +130,10 @@ public class EffortLoggerUI extends Application {
 	        };
 	    }
 	    
-	    private Runnable StartPrototypeThree() {
+	    private Runnable StartSavedPokerStatePrototype() {
 	        return () -> {
-	            // Start your prototype
+	        	SavedPokerStatePrototype prototypeWindow = new SavedPokerStatePrototype(this.primaryStage);
+	            prototypeWindow.showWindow();
 	        };
 	    }
     
