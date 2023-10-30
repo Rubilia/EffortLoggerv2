@@ -41,11 +41,11 @@ public class PortfolioOverview {
         notStartedTableView.getColumns().addAll(idColumn, nameColumn, assigneeColumn, weightColumn);
         notStartedTableView.setItems(getDummyData());  // Load dummy data
 
-        VBox notStartedBox = createProjectList("Not Started", notStartedTableView, "#f4f4f4");  // Light grey
+        VBox notStartedBox = createProjectList("Not Started", notStartedTableView, "#f4f4f4");
         HBox projectLists = new HBox(10, notStartedBox, createProjectList("In Progress", inProgressListView, "#e6e6e6"), createProjectList("Done / In Review", doneListView, "#d9d9d9"));  // Shades of grey
 
-        Button addButton = createButton("Add Project", e -> handleAddProject(), "#3498db");  // Vibrant blue
-        Button moveAheadButton = createButton("Move Ahead", e -> handleMoveAhead(), "#3498db");  // Vibrant blue
+        Button addButton = createButton("Add Project", e -> handleAddProject(), "#3498db");
+        Button moveAheadButton = createButton("Move Ahead", e -> handleMoveAhead(), "#3498db");
 
         HBox buttonBox = new HBox(10, addButton, moveAheadButton);
         buttonBox.setAlignment(Pos.CENTER);
