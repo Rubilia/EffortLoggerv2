@@ -11,6 +11,9 @@
 
 package Prototype;
 
+import Prototype.Data.Data;
+import Prototype.Data.Project;
+import Prototype.Data.Task;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
