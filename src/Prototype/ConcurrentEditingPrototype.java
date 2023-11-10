@@ -16,6 +16,7 @@ import java.util.UUID;
 import Prototype.Data.Data;
 import Prototype.Data.Project;
 import Prototype.Data.Task;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -32,6 +33,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class ConcurrentEditingPrototype extends Stage{
 
@@ -58,7 +60,8 @@ public class ConcurrentEditingPrototype extends Stage{
         setupUI();
         ProjectSelectorSetup();
         logEntrySelectorSetup();
-        updateButtonSetup();        
+        updateButtonSetup();
+        stage.setOnCloseRequest(event -> handleWindowClose(event));
     }
 
     private void setupUI() {
@@ -242,9 +245,30 @@ public class ConcurrentEditingPrototype extends Stage{
             if (project == null) {
                 return; // Handle the case when the project is not found
             }
+            
+            if (oldValue != null) {
+                Task oldTask = project.getTaskByName(oldValue);
+                oldTask.unlock(userID);
+                data.saveData();
+            }
+            
             currentTaskName = newValue;
             Task selectedTask = project.getTaskByName(newValue);
             if (selectedTask != null) {
+            	// Handle locked tasks
+            	if (selectedTask.isLocked(userID)){
+            		currentTaskName = null;
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Selected task is locked! Try again later");
+                    alert.showAndWait();
+                    return;
+            	}
+            	
+            	selectedTask.lock(userID);
+            	data.saveData();
+
                 // Update UI based on the selected log
                 detailsLabel.setText(String.format("Date: %s    Start Time: %s    Stop time: %s",
                 		selectedTask.getDate(), selectedTask.getStartTime(), selectedTask.getStopTime()));
@@ -292,7 +316,6 @@ public class ConcurrentEditingPrototype extends Stage{
         });
     }
 
-    
     public void informAboutEditingTimeout() {
         Alert alert = new Alert(AlertType.WARNING);
         alert.setTitle("Autosave");
@@ -301,6 +324,18 @@ public class ConcurrentEditingPrototype extends Stage{
         alert.showAndWait();
     }
     
+    private void handleWindowClose(WindowEvent event) {
+    	// Release locks for all acquired tasks
+        for (Project p: data.getProjects()) {
+        	for (Task t: p.getTasks()) {
+        		if (t.getCurrentUserEditing().getUserId().equals(userID)) {
+        			t.unlock(userID);
+        		}
+        	}
+        }
+        data.saveData();
+        primaryStage.show();
+    }
 
     public void showWindow() {
         primaryStage.close();

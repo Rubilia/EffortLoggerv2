@@ -51,8 +51,8 @@ public class Data implements Serializable {
         ArrayList<Task> userLogsProject1 = new ArrayList<>();
         
         // UserLog entries for "Sample Project 1"
-        Task log1 = new Task("log_001", "Sample Log 1", "Sample description 1", "2023-10-25", "09:00:00", "11:00:00", "Design", "Agile", "Backend Coding", new CurrentUserEditing("", ""));
-        Task log2 = new Task("log_002", "Sample Log 2", "Sample description 2", "2023-10-26", "14:00:00", "16:00:00", "Development", "Scrum", "UI/UX Design", new CurrentUserEditing("", "")); // Assuming CurrentUserEditing constructor accepts userID and lastInteractionTime
+        Task log1 = new Task("log_001", "Sample Log 1", "Sample description 1", "2023-10-25", "09:00:00", "11:00:00", "Design", "Agile", "Backend Coding", new CurrentUserEditing(""));
+        Task log2 = new Task("log_002", "Sample Log 2", "Sample description 2", "2023-10-26", "14:00:00", "16:00:00", "Development", "Scrum", "UI/UX Design", new CurrentUserEditing(""));
 
         userLogsProject1.add(log1);
         userLogsProject1.add(log2);
@@ -69,8 +69,8 @@ public class Data implements Serializable {
         ArrayList<Task> userLogsProject2 = new ArrayList<>();
 
         // UserLog entries for "Sample Project 2"
-        Task log3 = new Task("log_003", "Sample Log 3", "Sample description 3", "2023-10-27", "10:00:00", "12:00:00", "Initiation", "Waterfall", "Requirement Gathering", new CurrentUserEditing("", ""));
-        Task log4 = new Task("log_004", "Sample Log 4", "Sample description 4", "2023-10-28", "13:00:00", "15:00:00", "Execution", "Plan 2", "Evaluation", new CurrentUserEditing("", ""));
+        Task log3 = new Task("log_003", "Sample Log 3", "Sample description 3", "2023-10-27", "10:00:00", "12:00:00", "Initiation", "Waterfall", "Requirement Gathering", new CurrentUserEditing(""));
+        Task log4 = new Task("log_004", "Sample Log 4", "Sample description 4", "2023-10-28", "13:00:00", "15:00:00", "Execution", "Plan 2", "Evaluation", new CurrentUserEditing(""));
 
         userLogsProject2.add(log3);
         userLogsProject2.add(log4);

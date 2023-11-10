@@ -20,13 +20,9 @@ public class CurrentUserEditing implements Serializable {
     private LocalDateTime lastInteractionTime;
 
     // Constructor
-    public CurrentUserEditing(String userId, String lastInteraction) {
+    public CurrentUserEditing(String userId) {
         this.userId = userId;
-        if (lastInteraction != null && !lastInteraction.isEmpty()) {
-            this.lastInteractionTime = LocalDateTime.parse(lastInteraction, DateTimeFormatter.ISO_DATE_TIME);
-        } else {
-            this.lastInteractionTime = null; // Handle empty or null strings for last interaction time
-        }
+        lastInteractionTime = LocalDateTime.now();
     }
 
     // Getters and setters

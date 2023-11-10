@@ -47,6 +47,18 @@ public class Task implements Serializable {
         this.currentUserEditing = currentUserEditing;
         this.userStories = new ArrayList<>();
     }
+    
+    public boolean isLocked(String userID) {
+    	return !currentUserEditing.getUserId().equals("") && !currentUserEditing.getUserId().equals(userID);
+    }
+    
+    public void lock(String userId) {
+    	currentUserEditing = new CurrentUserEditing(userId);
+    }
+    
+    public void unlock(String userId) {
+    	currentUserEditing = new CurrentUserEditing("");
+    }
 
     // Getters and setters for all fields
     public String getName() {
