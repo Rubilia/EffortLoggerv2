@@ -10,7 +10,17 @@
 
 package Prototype;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
+import Prototype.Data.Data;
+import Prototype.Data.Project;
+import Prototype.Data.Task;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -23,18 +33,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.application.Platform;
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.stage.WindowEvent;
 
 public class ConcurrentEditingPrototype extends Stage{
 
@@ -50,18 +49,19 @@ public class ConcurrentEditingPrototype extends Stage{
     private GridPane grid;
     
     private String userID, currentProjectName = null, currentTaskName = null;
-    private JsonConcurrencyTracker jsonTracker;
+    private Data data;
 
     public ConcurrentEditingPrototype(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.userID = UUID.randomUUID().toString();
-        this.jsonTracker = new JsonConcurrencyTracker(this);  // Instantiate the JsonConcurrencyTracker class
+        this.data = new Data();  // Instantiate the JsonConcurrencyTracker class
         
         // Prepare UI for dynamic updates
         setupUI();
         ProjectSelectorSetup();
         logEntrySelectorSetup();
-        updateButtonSetup();        
+        updateButtonSetup();
+        stage.setOnCloseRequest(event -> handleWindowClose(event));
     }
 
     private void setupUI() {
@@ -200,134 +200,91 @@ public class ConcurrentEditingPrototype extends Stage{
     }
 
     public void ProjectSelectorSetup() {
-        try {
-            ArrayList<String> projects = jsonTracker.getProjectNames();
-            projectSelect.setItems(FXCollections.observableArrayList(projects));
+        ArrayList<String> projectNames = data.getProjectNames();
+        projectSelect.setItems(FXCollections.observableArrayList(projectNames));
 
-            // Bind a method to the ComboBox to handle selection changes
-            projectSelect.valueProperty().addListener((observable, oldValue, newValue) -> {
-                try {
-                	if (newValue == null | newValue.equals("null")) return;
-                	
-                	currentProjectName = newValue;
+        projectSelect.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || "null".equals(newValue)) return;
 
-                    // Reset UI elements
-                    detailsLabel.setText("Date: <date>    Start Time: <time>    Stop time: <time>");
+            currentProjectName = newValue;
+            detailsLabel.setText("Date: <date>    Start Time: <time>    Stop time: <time>");
 
-                    // Retrieve project attributes based on the selected project name
-                    JSONObject projectAttributes = jsonTracker.getProjectAttributes(newValue);
+            Project projectAttributes = data.getProjectByName(currentProjectName);
+            if (projectAttributes == null) {
+                return; // Handle the case when the project is not found
+            }
 
-                    // Clear existing items in logEntrySelect
-                    logEntrySelect.getItems().clear();
+            logEntrySelect.getItems().clear();
+            for (Task task : projectAttributes.getTasks()) {
+                logEntrySelect.getItems().add(task.getName());
+            }
 
-                    // Retrieve the "UserLogs" array from the project attributes
-                    JSONArray userLogs = projectAttributes.getJSONArray("UserLogs");
+            lifeCycleStepsDropdown.getItems().clear();
+            for (String lifeCycle : projectAttributes.getLifeCycleSteps()) {
+                lifeCycleStepsDropdown.getItems().add(lifeCycle);
+            }
 
-                    // Populate logEntrySelect with "logName" attributes from "UserLogs"
-                    for (int i = 0; i < userLogs.length(); i++) {
-                        JSONObject logEntry = userLogs.getJSONObject(i);
-                        String logName = logEntry.getString("logName");
-                        logEntrySelect.getItems().add(logName);
-                    }
+            effortCategoryDropdown.getItems().clear();
+            for (String effortCategory : projectAttributes.getEffortCategories()) {
+                effortCategoryDropdown.getItems().add(effortCategory);
+            }
 
-                    // Clear and set items for lifeCycleStepsDropdown
-                    lifeCycleStepsDropdown.getItems().clear();
-                    JSONArray lifeCycleSteps = projectAttributes.getJSONArray("LifeCycleSteps");
-                    for (int i = 0; i < lifeCycleSteps.length(); i++) {
-                        lifeCycleStepsDropdown.getItems().add(lifeCycleSteps.getString(i));
-                    }
-
-                    // Clear and set items for effortCategoryDropdown
-                    effortCategoryDropdown.getItems().clear();
-                    JSONArray effortCategories = projectAttributes.getJSONArray("EffortCategories");
-                    for (int i = 0; i < effortCategories.length(); i++) {
-                        effortCategoryDropdown.getItems().add(effortCategories.getString(i));
-                    }
-
-                    // Clear and set items for planDropdown
-                    planDropdown.getItems().clear();
-                    JSONArray plans = projectAttributes.getJSONArray("Plans");
-                    for (int i = 0; i < plans.length(); i++) {
-                        planDropdown.getItems().add(plans.getString(i));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            planDropdown.getItems().clear();
+            for (String plan : projectAttributes.getPlans()) {
+                planDropdown.getItems().add(plan);
+            }
+        });
     }
-    
+
     public void logEntrySelectorSetup() {
         // Define the listener
-        ChangeListener<String> valueChangeListener = new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                try {
-                	if (newValue == null | newValue.equals("null")) return;
-                	
-                    if (!jsonTracker.changeOwnership(currentProjectName, oldValue, newValue, userID)) {
-                    	// Remove the listener
-                    	logEntrySelect.valueProperty().removeListener(this);
-                    	
-                    	currentTaskName = null;
-                    	// Use Platform.runLater to defer setting the value
-                    	Platform.runLater(() -> {
-                    	    // Set the value back to what it was
-                    		logEntrySelect.setValue(null);
+        ChangeListener<String> valueChangeListener = (observable, oldValue, newValue) -> {
+            if (newValue == null || "null".equals(newValue)) return;
 
-                    	    // Re-add the listener
-                    	    logEntrySelect.valueProperty().addListener(this);
-                    	});
+            Project project = data.getProjectByName(currentProjectName);
+            if (project == null) {
+                return; // Handle the case when the project is not found
+            }
+            
+            if (oldValue != null) {
+                Task oldTask = project.getTaskByName(oldValue);
+                oldTask.unlock(userID);
+                data.saveData();
+            }
+            
+            currentTaskName = newValue;
+            Task selectedTask = project.getTaskByName(newValue);
+            if (selectedTask != null) {
+            	// Handle locked tasks
+            	if (selectedTask.isLocked(userID)){
+            		currentTaskName = null;
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Selected task is locked! Try again later");
+                    alert.showAndWait();
+                    return;
+            	}
+            	
+            	selectedTask.lock(userID);
+            	data.saveData();
 
-                        // Show a dialog saying "This log is being edited by someone else" with an OK button
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Log Unavailable");
-                        alert.setHeaderText(null);
-                        alert.setContentText("This log is being edited by someone else.");
-                        alert.show();
-                        return; // Exit the listener to avoid further processing
-                    }
-
-                    // Get the selected project name and task name
-                    String projectName = projectSelect.getValue();
-                    String taskName = newValue;
-                    currentTaskName = taskName;
-
-                    // Use the method to get task attributes
-                    JSONObject taskAttributes = jsonTracker.getTaskAttributes(projectName, taskName);
-
-                    if (taskAttributes != null) {
-                        // Extract date, startTime, stopTime, lifeCycle, effortCategory, and plan from task attributes
-                        String date = taskAttributes.getString("date");
-                        String startTime = taskAttributes.getString("startTime");
-                        String stopTime = taskAttributes.getString("stopTime");
-                        String lifeCycle = taskAttributes.getString("lifeCycle");
-                        String effortCategory = taskAttributes.getString("effortCategory");
-                        String plan = taskAttributes.getString("plan");
-
-                        // Set the text of the modifyLabel and ComboBoxes based on task attributes
-                        detailsLabel.setText("Date: " + date + "    StartTime: " + startTime + "   StopTime: " + stopTime);
-                        lifeCycleStepsDropdown.setValue(lifeCycle);
-                        effortCategoryDropdown.setValue(effortCategory);
-                        planDropdown.setValue(plan);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                // Update UI based on the selected log
+                detailsLabel.setText(String.format("Date: %s    Start Time: %s    Stop time: %s",
+                		selectedTask.getDate(), selectedTask.getStartTime(), selectedTask.getStopTime()));
+                lifeCycleStepsDropdown.setValue(selectedTask.getLifeCycleStep());
+                effortCategoryDropdown.setValue(selectedTask.getEffortCategory());
+                planDropdown.setValue(selectedTask.getPlan());
             }
         };
 
         // Initially add the listener
         logEntrySelect.valueProperty().addListener(valueChangeListener);
     }
-    
+
     public void updateButtonSetup() {
         updateButton.setOnAction(e -> {
-            // Check if currentProjectName or currentTaskName are null
             if (currentProjectName == null || currentTaskName == null) {
-                // Show an error alert
                 Alert alert = new Alert(AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText(null);
@@ -336,28 +293,29 @@ public class ConcurrentEditingPrototype extends Stage{
                 return;
             }
 
-            // Retrieve text from comboboxes
             String selectedLifeCycleStep = lifeCycleStepsDropdown.getValue();
             String selectedEffortCategory = effortCategoryDropdown.getValue();
             String selectedPlan = planDropdown.getValue();
 
-            // Call updateLogData function
-            try {
-            	jsonTracker.updateLogData(currentProjectName, currentTaskName, selectedLifeCycleStep, selectedEffortCategory, selectedPlan);
-            } catch (JSONException ex) {
-                // Handle JSON parsing error here (e.g., show an error alert or print the stack trace)
-                ex.printStackTrace();
+            Project currentProject = data.getProjectByName(currentProjectName);
+            if (currentProject != null) {
+                Task taskToUpdate = currentProject.getTaskByName(currentTaskName);
+                if (taskToUpdate != null) {
+                    taskToUpdate.setLifeCycleStep(selectedLifeCycleStep);
+                    taskToUpdate.setEffortCategory(selectedEffortCategory);
+                    taskToUpdate.setPlan(selectedPlan);
+                    data.saveData(); // Save the updated Data object to file
+                }
             }
-            
-            // Show an error alert
+
             Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Success!");
+            alert.setTitle("Success");
             alert.setHeaderText(null);
             alert.setContentText("Your changes have been saved");
             alert.showAndWait();
         });
     }
-    
+
     public void informAboutEditingTimeout() {
         Alert alert = new Alert(AlertType.WARNING);
         alert.setTitle("Autosave");
@@ -366,6 +324,18 @@ public class ConcurrentEditingPrototype extends Stage{
         alert.showAndWait();
     }
     
+    private void handleWindowClose(WindowEvent event) {
+    	// Release locks for all acquired tasks
+        for (Project p: data.getProjects()) {
+        	for (Task t: p.getTasks()) {
+        		if (t.getCurrentUserEditing().getUserId().equals(userID)) {
+        			t.unlock(userID);
+        		}
+        	}
+        }
+        data.saveData();
+        primaryStage.show();
+    }
 
     public void showWindow() {
         primaryStage.close();
