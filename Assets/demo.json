@@ -22,14 +22,14 @@
                 "date": "2023-10-25",
                 "effortCategory": "Backend Coding",
                 "currentUserEditing": {
-                    "lastInteractionTime": "",
-                    "userId": ""
+                    "lastInteractionTime": "2023-11-10T04:06:54.535182700",
+                    "userId": "de433c60-1297-4929-87d8-5834d76d6113"
                 },
                 "logName": "Sample Log 1",
                 "logId": "log_001",
                 "startTime": "09:00:00",
                 "stopTime": "11:00:00",
-                "lifeCycle": "Development",
+                "lifeCycle": "Design",
                 "plan": "Agile"
             },
             {
