@@ -11,7 +11,16 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.paint.Color;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
+
+
+import Prototype.Data.Data;
+import Prototype.Data.Project;
+import Prototype.Data.Task;
 
 public class LoginAuthentication  {
 	class user { //class to hold sample user for testing 
@@ -26,12 +35,10 @@ public class LoginAuthentication  {
 		}
 	}
 	//sample users
-	user exampleUser = new user("LukeEng1111", "ZZ12345678$"); 
-	user exampleUser2 = new user("LynRobertCarter11", "SS12345678$");
 	//
 	private ArrayList<user> USERS = new ArrayList<>();
 	// Stages
-	private Stage stage, loginStage, signUpStage, primaryStage, loginSuccessStage, lockdownStage;
+	private Stage pokerStage, stage, loginStage, signUpStage, primaryStage, loginSuccessStage, lockdownStage;
 
     // Buttons
     private Button loginButton, signupButton, loginConfirmButton, signupConfirmButton;
@@ -62,8 +69,7 @@ public class LoginAuthentication  {
 
     private void setupUI() {
     	//add example user to approved user list
-    	USERS.add(exampleUser);
-    	USERS.add(exampleUser2);
+  
         stage.setTitle("Tu 44 Effort Log Login/SignUp");
         stage.setResizable(false);
         
@@ -160,8 +166,9 @@ public class LoginAuthentication  {
                 try {
                     if (authenticateUser(userText, passText)) {
                         errorLabel.setText(""); // Clear any previous error message
+                        StartPokerEffortLoggerMenu().run();
                         loginStage.close();
-                        navigateToLoginAccepted(); //if successful navigate to login accepted view
+                         //if successful navigate to login accepted view
                     } else {
                         // Display "Access Denied" message in red
                         errorLabel.setText("Access Denied");
@@ -230,17 +237,38 @@ public class LoginAuthentication  {
         primaryStage.hide();
     }
 
-	
-    private boolean authenticateUser(String username, String password) throws Throwable { //function to iterate and find a user through the list of authorized users 
-        for (user currentUser : USERS) {
+    private List<user> loadUsersFromFile(String filePath) throws IOException {
+        List<user> users = new ArrayList<>();
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" "); // Split by space
+                if (parts.length == 2) {
+                    String username = parts[0].trim();
+                    String password = parts[1].trim();
+                    users.add(new user(username, password));
+                }
+            }
+        }
+        
+        return users;
+    }
+
+    private boolean authenticateUser(String username, String password) throws IOException {
+        List<user> authorizedUsers = loadUsersFromFile("./users.txt");
+        
+        for (user currentUser : authorizedUsers) {
             if (currentUser.username.equals(username) && currentUser.password.equals(password)) {
+            	
                 return true;
             }
         }
+        
         return false;
     }
 
-	
+
     private boolean authUserSignUp(String in) throws Throwable { //function to validate input username meets all criteria for a valid input
         //length of input must be greater than 8
     	if (in.length() < 8) {
@@ -403,7 +431,12 @@ public class LoginAuthentication  {
         stage.close();
     }
 
-
+    private Runnable StartPokerEffortLoggerMenu() {
+        return () -> {
+        	Poker_EffortLogger_Menu prototypeWindow = new Poker_EffortLogger_Menu();
+            prototypeWindow.showWindow();
+        };
+    }
 
 
     
