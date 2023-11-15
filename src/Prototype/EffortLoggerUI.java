@@ -91,11 +91,9 @@ public class EffortLoggerUI extends Application {
         
         // Edit these lines to specify information about your prototypes
         riskReductionContainer.getChildren().addAll(
-                createPrototypeBox("Concurrent Editing Prototype", "Concurrent editing allows multiple users to work simultaneously. EffortLogger ensures changes are accurate and avoids overwrites.", "Ilia Rubashkin", StartConcurrentEditingPrototype()),
-                createPrototypeBox("Login / Sign-Up Authentication Prototype", "Login / Sign-up authentication allows users to enter into the planning poker enviornment without the worry of unauthorized users / hackers breaching the planning poker data or their own.", "Luke Engel", StartPrototypeTwo()),
-                createPrototypeBox("Saved State Poker Prototype", "Saved state prevents data loss in the event of error in Planning Poker", "Josh Camberg", StartSavedPokerStatePrototype()),
-                createPrototypeBox("Portfolio Overview", "Portfolio Overview organizes projects into visual stages, allows assignment to individuals or teams, and facilitates transitions between stages with commenting and review capabilities in EffortLogger.", "Mustafa Said", StartPrototypeFour()),
-                createPrototypeBox("Prototype 5", "Description for Prototype 5", "Author5", StartPrototypeFive())
+                
+                createPrototypeBox("EffortLogger / Planning Poker", "", "Tu-44", StartPrototypeTwo())
+                
         );
 
         mainContainer.getChildren().addAll(riskReductionTitle, riskReductionContainer);
