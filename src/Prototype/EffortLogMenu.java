@@ -26,7 +26,7 @@ public class EffortLogMenu extends Application {
         primaryStage.setTitle("Main Application");
 
         // Create buttons for EffortLogger and ConcurrentEditing
-        Button effortLoggerButton = new Button("Add Log");
+        Button effortLoggerButton = new Button("Create Effort Log");
         Button concurrentEditingButton = new Button("Concurrent Editing");
 
         // Set styles for the buttons

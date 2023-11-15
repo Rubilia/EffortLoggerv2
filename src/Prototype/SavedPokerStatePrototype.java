@@ -127,6 +127,7 @@ public class SavedPokerStatePrototype extends Stage {
         // User Info Setup
         HBox userInfoBox = new HBox();
         
+        userName = Session.getInstance().getUsername();
         userNameLabel = new Label("User: " + userName + " ");
         userNameLabel.setStyle(labelStyleBold);
         userCountLabel = new Label("User Count: " + userCount);
@@ -469,6 +470,7 @@ public class SavedPokerStatePrototype extends Stage {
                 currentStoryLabel.setText("Current Story:");
                 sessionBox.setVisible(true);
                 phaseOneBox.setVisible(false);
+                Session.getInstance().logout();
                 break;
         }
     }

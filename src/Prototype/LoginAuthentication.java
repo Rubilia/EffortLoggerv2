@@ -13,6 +13,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.paint.Color;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -58,6 +59,8 @@ public class LoginAuthentication  {
     String buttonStyle = "-fx-background-color: #4E90A4; -fx-text-fill: #FFFFFF; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-font-size: 14pt;";
 
     private int loginCount;
+    
+    private static final String USER_PATH = "Assets" + File.separator + "users.txt";
 
     public LoginAuthentication(Stage primaryStage) {
     	
@@ -256,11 +259,12 @@ public class LoginAuthentication  {
     }
 
     private boolean authenticateUser(String username, String password) throws IOException {
-        List<user> authorizedUsers = loadUsersFromFile("D:/Downloads/EffortPokerFinal/EffortLoggerv2/Assets/users.txt");
+        List<user> authorizedUsers = loadUsersFromFile(USER_PATH);
         
         for (user currentUser : authorizedUsers) {
             if (currentUser.username.equals(username) && currentUser.password.equals(password)) {
             	
+            	Session.getInstance().setUsername(currentUser.username);
                 return true;
             }
         }
@@ -509,3 +513,4 @@ public class LoginAuthentication  {
     	stage.show();
     }
 }
+
