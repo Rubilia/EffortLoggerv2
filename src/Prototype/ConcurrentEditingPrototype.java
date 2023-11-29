@@ -42,10 +42,10 @@ public class ConcurrentEditingPrototype extends Stage{
     
     // Declaring UI Elements as class variables
     private VBox layout, selectProjectBox, clearLogBox, modifyLogBox, bottomActions, deleteActions, splitActions, proceedActions;
-    private HBox combinedBox, updateBox, nextLineActions;
+    private HBox combinedBox, updateBox;
     private Label selectProjectLabel, clearLogLabel, effortLogEntryLabel, modifyLabel, detailsLabel, updateLabel, deleteLabel, splitLabel, proceedLabel;
     private ComboBox<String> projectSelect, logEntrySelect, lifeCycleStepsDropdown, effortCategoryDropdown, planDropdown;
-    private Button clearLogButton, updateButton, deleteButton, splitButton, proceedButton;
+    private Button clearLogButton, updateButton, deleteButton;
     private GridPane grid;
     
     private String userID, currentProjectName = null, currentTaskName = null;
@@ -61,6 +61,8 @@ public class ConcurrentEditingPrototype extends Stage{
         ProjectSelectorSetup();
         logEntrySelectorSetup();
         updateButtonSetup();
+        setupClearButton();
+        setupDeleteButton();
         stage.setOnCloseRequest(event -> handleWindowClose(event));
     }
 
@@ -175,26 +177,7 @@ public class ConcurrentEditingPrototype extends Stage{
         deleteActions.getChildren().addAll(deleteLabel, deleteButton);
         bottomActions.getChildren().add(deleteActions);
 
-        nextLineActions = new HBox(30);
-        splitActions = new VBox(10);
-        splitLabel = new Label("Split Current Entry into two Entries:");
-        splitLabel.setStyle(labelStyleBold);
-        splitButton = new Button("Split Entry Into Two Entries");
-        splitButton.setStyle(buttonStyle);
-        splitActions.getChildren().addAll(splitLabel, splitButton);
-        nextLineActions.getChildren().add(splitActions);
-
-        proceedActions = new VBox(10);
-        proceedLabel = new Label("Proceed to Effort Log Console");
-        proceedLabel.setStyle(labelStyleBold);
-        proceedButton = new Button("Proceed to Effort Log Console");
-        proceedButton.setStyle(buttonStyle);
-        proceedActions.getChildren().addAll(proceedLabel, proceedButton);
-        nextLineActions.getChildren().add(proceedActions);
-
-        bottomActions.getChildren().add(nextLineActions);
         layout.getChildren().add(bottomActions);
-
         Scene scene = new Scene(layout, 900, 820);
         stage.setScene(scene);
     }
@@ -324,6 +307,31 @@ public class ConcurrentEditingPrototype extends Stage{
         alert.showAndWait();
     }
     
+    public void setupDeleteButton() {
+    	deleteButton.setOnAction(e -> {
+    		if (currentProjectName == null || currentTaskName == null) {
+    	        Alert alert = new Alert(AlertType.WARNING);
+    	        alert.setTitle("Error");
+    	        alert.setHeaderText(null);
+    	        alert.setContentText("You have not selected a task!");
+    	        alert.showAndWait();
+    	        return;
+    		}
+    		data.deleteTask(currentProjectName, currentTaskName);
+            ConcurrentEditingPrototype prototypeWindow = new ConcurrentEditingPrototype(this.primaryStage);
+            prototypeWindow.showWindow();
+    		stage.close();
+    	});
+    }
+    
+    public void setupClearButton() {
+    	clearLogButton.setOnAction(e -> {
+            ConcurrentEditingPrototype prototypeWindow = new ConcurrentEditingPrototype(this.primaryStage);
+            prototypeWindow.showWindow();
+    		stage.close();
+        });
+    }
+    
     private void handleWindowClose(WindowEvent event) {
     	// Release locks for all acquired tasks
         for (Project p: data.getProjects()) {
@@ -334,7 +342,6 @@ public class ConcurrentEditingPrototype extends Stage{
         	}
         }
         data.saveData();
-        primaryStage.show();
     }
 
     public void showWindow() {

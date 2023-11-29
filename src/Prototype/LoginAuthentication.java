@@ -13,6 +13,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.paint.Color;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -256,7 +257,7 @@ public class LoginAuthentication  {
     }
 
     private boolean authenticateUser(String username, String password) throws IOException {
-        List<user> authorizedUsers = loadUsersFromFile("./users.txt");
+        List<user> authorizedUsers = loadUsersFromFile("Assets" + File.separator + "users.txt");
         
         for (user currentUser : authorizedUsers) {
             if (currentUser.username.equals(username) && currentUser.password.equals(password)) {

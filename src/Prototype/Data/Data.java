@@ -119,6 +119,14 @@ public class Data implements Serializable {
     public void setProjects(ArrayList<Project> projects) {
         this.projects = projects;
     }
+    
+    public void deleteTask(String projectName, String taskName) {
+    	Project p = getProjectByName(projectName);
+    	Task t = p.getTaskByName(taskName);
+    	p.removeUserLog(t);
+    	saveData();
+    	
+    }
 }
 
 
