@@ -29,14 +29,12 @@ private Stage primaryStage;
         // Create buttons for EffortLogger and Planning Poker
         Button effortLoggerButton = new Button("EffortLogger");
         Button planningPokerButton = new Button("Planning Poker");
-        Button createEffortButton = new Button("Create New Effort Log");
 
         // Set styles for the buttons
         String buttonStyle = "-fx-background-color: #4E90A4; -fx-text-fill: #FFFFFF; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-font-size: 14pt;";
         effortLoggerButton.setStyle(buttonStyle);
         planningPokerButton.setStyle(buttonStyle);
-        createEffortButton.setStyle(buttonStyle);
-        
+
         // Set actions for the buttons
         effortLoggerButton.setOnAction(e -> {
             // Add the logic to navigate to EffortLogger view
@@ -48,18 +46,13 @@ private Stage primaryStage;
             StartSavedPokerStatePrototype().run();
         });
 
-        createEffortButton.setOnAction(e -> {
-            // Add the logic to navigate to Planning Poker view
-            StartEffortLogCreator().run();
-        });
-        
         // Create HBox for buttons
-        VBox buttonLayout = new VBox(30);
+        HBox buttonLayout = new HBox(20);
         buttonLayout.setAlignment(Pos.CENTER);
-        buttonLayout.getChildren().addAll(effortLoggerButton, planningPokerButton, createEffortButton);
+        buttonLayout.getChildren().addAll(effortLoggerButton, planningPokerButton);
 
         // Create VBox for the main layout
-        HBox mainLayout = new HBox(50);
+        VBox mainLayout = new VBox(50);
         mainLayout.setAlignment(Pos.CENTER);
         mainLayout.setPadding(new Insets(20));
         mainLayout.getChildren().addAll(buttonLayout);
@@ -86,12 +79,5 @@ private Stage primaryStage;
     		EffortLogMenu prototypeWindow = new EffortLogMenu();
     		prototypeWindow.showWindow();
     	};
-    }
-    
-    private Runnable StartEffortLogCreator() {
-        return () -> {
-        	EffortLogCreator prototypeWindow = new EffortLogCreator(this.primaryStage);
-            prototypeWindow.showWindow();
-        };
     }
 }
