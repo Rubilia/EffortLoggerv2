@@ -23,11 +23,11 @@ public class EffortLogMenu extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Main Application");
+        primaryStage.setTitle("Effort Logger");
 
         // Create buttons for EffortLogger and ConcurrentEditing
-        Button effortLoggerButton = new Button("Create Effort Log");
-        Button concurrentEditingButton = new Button("Concurrent Editing");
+        Button effortLoggerButton = new Button("Create Effort Logs");
+        Button concurrentEditingButton = new Button("Edit Effort Logs");
 
         // Set styles for the buttons
         String buttonStyle = "-fx-background-color: #4E90A4; -fx-text-fill: #FFFFFF; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-font-size: 14pt;";
@@ -36,7 +36,9 @@ public class EffortLogMenu extends Application {
 
         // Set actions for the buttons
         effortLoggerButton.setOnAction(e -> {
-            
+        	EffortLogCreator prototypeWindow = new EffortLogCreator(primaryStage);
+    		prototypeWindow.showWindow();
+    		primaryStage.close();
         });
 
         concurrentEditingButton.setOnAction(e -> {

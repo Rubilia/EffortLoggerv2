@@ -309,14 +309,6 @@ public class EffortLogCreator extends Stage{
     }
     
     private void handleWindowClose(WindowEvent event) {
-    	// Release locks for all acquired tasks
-        for (Project p: data.getProjects()) {
-        	for (Task t: p.getTasks()) {
-        		if (t.getCurrentUserEditing().getUserId().equals(userID)) {
-        			t.unlock(userID);
-        		}
-        	}
-        }
         primaryStage.show();
     }
 

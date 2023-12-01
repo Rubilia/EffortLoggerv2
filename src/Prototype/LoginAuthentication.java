@@ -71,7 +71,7 @@ public class LoginAuthentication  {
     private void setupUI() {
     	//add example user to approved user list
   
-        stage.setTitle("Tu 44 Effort Log Login/SignUp");
+        stage.setTitle("Authentication");
         stage.setResizable(false);
         
         String buttonStyle = "-fx-background-color: #4E90A4; -fx-text-fill: #FFFFFF; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-font-size: 14pt;";
